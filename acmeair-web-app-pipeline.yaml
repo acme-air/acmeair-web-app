@@ -78,6 +78,26 @@ spec:
                             }
                         } // script
                     } // steps
+                } // stage                
+                stage("Dependency Check") {
+                    steps {        
+                        dependencyCheck additionalArguments: '', odcInstallation: 'acme-dependency-check' 
+                        dependencyCheckPublisher pattern: ''
+                    } // steps
+                } // stage
+                stage('scan') {
+                    steps {
+                        script {
+                            echo "Running Twistlock scan on image ${templateName}:latest"
+                            twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: true, dockerAddress: 'unix:///var/run/docker.sock',
+                                gracePeriodDays: 0, ignoreImageBuildTime: true, image: "${templateName}:latest",
+                                key: '', logLevel: 'true', policy: 'critical', requirePackageUpdate: false, timeout: 10
+                            echo "Completed Twistlock scan. Publishing the report..."
+                            twistlockPublish ca: '', cert: '', containerized: true, dockerAddress: 'unix:///var/run/docker.sock', 
+                                image: "${templateName}:latest", key: '', logLevel: 'true', timeout: 10
+                            echo "Completed Twistlock publish"
+                        } // script
+                    } // steps
                 } // stage
                 stage('deploy') {
                     steps {
