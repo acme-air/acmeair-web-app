@@ -26,7 +26,7 @@ spec:
             }
 
             stages {
-                stage('preamble') {
+                stage('build') {
                     steps {
                         script {
                             openshift.withCluster() {
@@ -34,12 +34,6 @@ spec:
                                     echo "Using project: ${openshift.project()}"
                                 }
                             }
-                        }
-                    }
-                }
-                stage('cleanup') {
-                    steps {
-                        script {
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     // delete everything with this template label
@@ -50,24 +44,10 @@ spec:
                                     }
                                 }
                             }
-                        } // script
-                    } // steps
-                } // stage
-                stage('create') {
-                    steps {
-                        script {
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     // create a new application from the templatePath
                                     openshift.newApp(templatePath)
-                                }
-                            }
-                        } // script
-                    } // steps
-                } // stage
-                stage('build') {
-                    steps {
-                        script {
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     def builds = openshift.selector("bc", templateName).related('builds')
@@ -79,26 +59,41 @@ spec:
                         } // script
                     } // steps
                 } // stage                
-                stage("Dependency Check") {
-                    steps {        
-                        dependencyCheck additionalArguments: '', odcInstallation: 'acme-dependency-check' 
-                        dependencyCheckPublisher pattern: ''
-                    } // steps
-                } // stage
                 stage('scan') {
+                    parallel {
+                        stage("OWASP Dependency Check") {
+                            steps {        
+                                dependencyCheck additionalArguments: '', odcInstallation: 'acme-dependency-check' 
+                                dependencyCheckPublisher pattern: ''
+                            } // steps
+                        } // stage
+                        stage('Vulnerabilitie & Compliance Check') {
+                            steps {
+                                script {
+                                    echo "Running Twistlock scan on image ${templateName}:latest"
+                                    twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: true, dockerAddress: 'unix:///var/run/docker.sock',
+                                        gracePeriodDays: 0, ignoreImageBuildTime: true, image: "${templateName}:latest",
+                                        key: '', logLevel: 'true', policy: 'critical', requirePackageUpdate: false, timeout: 10
+                                    echo "Completed Twistlock scan. Publishing the report..."
+                                    twistlockPublish ca: '', cert: '', containerized: true, dockerAddress: 'unix:///var/run/docker.sock', 
+                                        image: "${templateName}:latest", key: '', logLevel: 'true', timeout: 10
+                                    echo "Completed Twistlock publish"
+                                } // script
+                            } // steps
+                        } // stage
+                    } // parallel
+                } // stage
+                stage('test') {
                     steps {
                         script {
-                            echo "Running Twistlock scan on image ${templateName}:latest"
-                            twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: true, dockerAddress: 'unix:///var/run/docker.sock',
-                                gracePeriodDays: 0, ignoreImageBuildTime: true, image: "${templateName}:latest",
-                                key: '', logLevel: 'true', policy: 'critical', requirePackageUpdate: false, timeout: 10
-                            echo "Completed Twistlock scan. Publishing the report..."
-                            twistlockPublish ca: '', cert: '', containerized: true, dockerAddress: 'unix:///var/run/docker.sock', 
-                                image: "${templateName}:latest", key: '', logLevel: 'true', timeout: 10
-                            echo "Completed Twistlock publish"
+                            openshift.withCluster() {
+                                openshift.withProject() {
+                                    echo "Using project: ${openshift.project()}"
+                                }
+                            }
                         } // script
                     } // steps
-                } // stage
+                } // stage                
                 stage('deploy') {
                     steps {
                         script {
@@ -113,7 +108,7 @@ spec:
                         } // script
                     } // steps
                 } // stage
-                stage('tag') {
+                stage('Promote') {
                     steps {
                         script {
                             openshift.withCluster() {
