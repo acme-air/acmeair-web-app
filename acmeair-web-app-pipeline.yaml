@@ -32,7 +32,8 @@ spec:
                             sh 'git --version'
                             sh 'docker -v'
                             sh 'printenv'
-                            sh 'sleep 30'
+                            sh 'sleep 10'
+                            git 'https://github.com/acme-air/acmeair-web-app'
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     echo "Using project: ${openshift.project()}"
