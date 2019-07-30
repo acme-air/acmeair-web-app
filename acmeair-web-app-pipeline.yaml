@@ -29,14 +29,6 @@ spec:
                 stage('initialize') {
                     steps {
                         script {
-                            sh 'git --version'
-                            sh 'docker -v'
-                            sh 'printenv'
-                            sh 'sleep 10'
-                            git 'https://github.com/acme-air/acmeair-web-app'
-                            sh 'sleep 10'
-                            sh 'find . -type f'
-                            sh 'docker build -t acmeair-web-app:latest .'
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     echo "Using project: ${openshift.project()}"
@@ -49,25 +41,37 @@ spec:
                                     }
                                 }
                             }
+                            git 'https://github.com/acme-air/acmeair-web-app'
                         }
                     }
                 }
                 stage('build') {
-                    steps {
-                        script {
-                            openshift.withCluster() {
-                                openshift.withProject() {
-                                    // create a new application from the templatePath
-                                    openshift.newApp(templatePath)
+                    parallel {
+                        stage('local') {
+                            steps {
+                                script {
+                                    sh 'docker build -t acmeair-web-app:latest .'
+                                } // script
+                            } // steps
+                        } // stage
+                        stage('remote') {
+                            steps {
+                                script {
+                                    openshift.withCluster() {
+                                        openshift.withProject() {
+                                            // create a new application from the templatePath
+                                            openshift.newApp(templatePath)
 
-                                    def builds = openshift.selector("bc", templateName).related('builds')
-                                    builds.untilEach(1) {
-                                        return (it.object().status.phase == "Complete")
+                                            def builds = openshift.selector("bc", templateName).related('builds')
+                                            builds.untilEach(1) {
+                                                return (it.object().status.phase == "Complete")
+                                            }
+                                        }
                                     }
-                                }
-                            }
-                        } // script
-                    } // steps
+                                } // script
+                            } // steps
+                        } // stage
+                    } // parallel
                 } // stage                
                 stage('test') {
                     steps {
