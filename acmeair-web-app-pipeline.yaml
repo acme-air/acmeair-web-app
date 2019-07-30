@@ -26,7 +26,7 @@ spec:
             }
 
             stages {
-                stage('build') {
+                stage('initialize') {
                     steps {
                         script {
                             openshift.withCluster() {
@@ -39,7 +39,16 @@ spec:
                                     if (openshift.selector("secrets", templateName).exists()) {
                                         openshift.selector("secrets", templateName).delete()
                                     }
-
+                                }
+                            }
+                        }
+                    }
+                }
+                stage('build') {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject() {
                                     // create a new application from the templatePath
                                     openshift.newApp(templatePath)
 
@@ -54,13 +63,18 @@ spec:
                 } // stage                
                 stage('scan') {
                     parallel {
+                        stage('SonarQube Analysis') {
+                            steps {
+                                sh "/home/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonarqubescanner/bin/sonar-scanner -Dsonar.host.url=http://13.59.154.166:9000 -Dsonar.projectName=acmeair-web-app -Dsonar.projectVersion=1.0 -Dsonar.projectKey=acmeair-web-app:app -Dsonar.sources=. -Dsonar.projectBaseDir=/home/jenkins/workspace/acme-ci-tools/acmeair-web-app-pipeline"
+                            } // steps
+                        } // stage
                         stage("OWASP Dependency Check") {
                             steps {        
                                 dependencyCheck additionalArguments: '', odcInstallation: 'acme-dependency-check' 
                                 dependencyCheckPublisher pattern: ''
                             } // steps
                         } // stage
-                        stage('Vulnerabilitie & Compliance Check') {
+                        stage('Vulnerabilities & Compliance Check') {
                             steps {
                                 script {
                                     echo "Running Twistlock scan on image ${templateName}:latest"
