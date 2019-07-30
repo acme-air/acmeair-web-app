@@ -61,12 +61,29 @@ spec:
                         } // script
                     } // steps
                 } // stage                
+                stage('test') {
+                    steps {
+                        script {
+                            openshift.withCluster() {
+                                openshift.withProject() {
+                                    echo "Using project: ${openshift.project()}"
+                                }
+                            }
+                        } // script
+                    } // steps
+                } // stage                
                 stage('scan') {
                     parallel {
                         stage('SonarQube Analysis') {
-                            steps {
-                                sh "/home/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonarqubescanner/bin/sonar-scanner -Dsonar.host.url=http://13.59.154.166:9000 -Dsonar.projectName=acmeair-web-app -Dsonar.projectVersion=1.0 -Dsonar.projectKey=acmeair-web-app:app -Dsonar.sources=. -Dsonar.projectBaseDir=/home/jenkins/workspace/acme-ci-tools/acmeair-web-app-pipeline"
-                            } // steps
+                            script {
+                                withSonarQubeEnv('acme-sonarqube') {
+                                    sh "printenv"
+                                    def scannerHome = tool 'acme-sonarqube';
+                                    sh "echo ${scannerHome}"
+                                    sh "${scannerHome}/bin/sonar-scanner"
+                                }
+                                // sh "/home/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonarqubescanner/bin/sonar-scanner -Dsonar.host.url=http://13.59.154.166:9000 -Dsonar.projectName=acmeair-web-app -Dsonar.projectVersion=1.0 -Dsonar.projectKey=acmeair-web-app:app -Dsonar.sources=. -Dsonar.projectBaseDir=/home/jenkins/workspace/acme-ci-tools/acmeair-web-app-pipeline"
+                            }
                         } // stage
                         stage("OWASP Dependency Check") {
                             steps {        
@@ -90,17 +107,6 @@ spec:
                         } // stage
                     } // parallel
                 } // stage
-                stage('test') {
-                    steps {
-                        script {
-                            openshift.withCluster() {
-                                openshift.withProject() {
-                                    echo "Using project: ${openshift.project()}"
-                                }
-                            }
-                        } // script
-                    } // steps
-                } // stage                
                 stage('deploy') {
                     steps {
                         script {
