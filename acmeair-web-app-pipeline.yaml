@@ -78,19 +78,19 @@ spec:
                 } // stage                
                 stage('scan') {
                     parallel {
-                        stage('SonarQube Analysis') {
-                            steps {
-                                script {
-                                    withSonarQubeEnv('acme-sonarqube') {
-                                        sh "printenv"
-                                        def scannerHome = tool 'acme-sonarqube';
-                                        sh "echo ${scannerHome}"
-                                        sh "${scannerHome}/bin/sonar-scanner"
-                                    }
-                                    // sh "/home/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonarqubescanner/bin/sonar-scanner -Dsonar.host.url=http://13.59.154.166:9000 -Dsonar.projectName=acmeair-web-app -Dsonar.projectVersion=1.0 -Dsonar.projectKey=acmeair-web-app:app -Dsonar.sources=. -Dsonar.projectBaseDir=/home/jenkins/workspace/acme-ci-tools/acmeair-web-app-pipeline"
-                                }
-                            }
-                        } // stage
+                        // stage('SonarQube Analysis') {
+                        //     steps {
+                        //         script {
+                        //             withSonarQubeEnv('acme-sonarqube') {
+                        //                 sh "printenv"
+                        //                 def scannerHome = tool 'acme-sonarqube';
+                        //                 sh "echo ${scannerHome}"
+                        //                 sh "${scannerHome}/bin/sonar-scanner"
+                        //             }
+                        //             // sh "/home/jenkins/tools/hudson.plugins.sonar.SonarRunnerInstallation/sonarqubescanner/bin/sonar-scanner -Dsonar.host.url=http://13.59.154.166:9000 -Dsonar.projectName=acmeair-web-app -Dsonar.projectVersion=1.0 -Dsonar.projectKey=acmeair-web-app:app -Dsonar.sources=. -Dsonar.projectBaseDir=/home/jenkins/workspace/acme-ci-tools/acmeair-web-app-pipeline"
+                        //         }
+                        //     }
+                        // } // stage
                         stage("OWASP Dependency Check") {
                             steps {        
                                 dependencyCheck additionalArguments: '', odcInstallation: 'acme-dependency-check' 
@@ -101,11 +101,11 @@ spec:
                             steps {
                                 script {
                                     echo "Running Twistlock scan on image ${templateName}:latest"
-                                    twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: false, dockerAddress: 'unix:///var/run/docker.sock',
+                                    twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: false, dockerAddress: 'tcp://localhost:2375',
                                         gracePeriodDays: 0, ignoreImageBuildTime: true, image: "${templateName}:latest",
                                         key: '', logLevel: 'true', policy: 'critical', requirePackageUpdate: false, timeout: 10
                                     echo "Completed Twistlock scan. Publishing the report..."
-                                    twistlockPublish ca: '', cert: '', containerized: false, dockerAddress: 'unix:///var/run/docker.sock', 
+                                    twistlockPublish ca: '', cert: '', containerized: false, dockerAddress: 'tcp://localhost:2375', 
                                         image: "${templateName}:latest", key: '', logLevel: 'true', timeout: 10
                                     echo "Completed Twistlock publish"
                                 } // script
