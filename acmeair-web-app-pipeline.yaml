@@ -32,7 +32,7 @@ spec:
                             sh 'git --version'
                             sh 'docker -v'
                             sh 'printenv'
-                            sh 'sleep 300'
+                            sh 'sleep 30'
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     echo "Using project: ${openshift.project()}"
