@@ -36,7 +36,7 @@ spec:
                             git 'https://github.com/acme-air/acmeair-web-app'
                             sh 'sleep 10'
                             sh 'find . -type f'
-                            sh 'cd acmeair-web-app && docker build -t acmeair-web-app:latest .'
+                            sh 'docker build -t acmeair-web-app:latest .'
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     echo "Using project: ${openshift.project()}"
