@@ -29,6 +29,9 @@ spec:
                 stage('initialize') {
                     steps {
                         script {
+                            sh 'git --version'
+                            sh 'docker -v'
+                            sh 'printenv'
                             openshift.withCluster() {
                                 openshift.withProject() {
                                     echo "Using project: ${openshift.project()}"
@@ -97,11 +100,11 @@ spec:
                             steps {
                                 script {
                                     echo "Running Twistlock scan on image ${templateName}:latest"
-                                    twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: true, dockerAddress: 'unix:///var/run/docker.sock',
+                                    twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: false, dockerAddress: 'unix:///var/run/docker.sock',
                                         gracePeriodDays: 0, ignoreImageBuildTime: true, image: "${templateName}:latest",
                                         key: '', logLevel: 'true', policy: 'critical', requirePackageUpdate: false, timeout: 10
                                     echo "Completed Twistlock scan. Publishing the report..."
-                                    twistlockPublish ca: '', cert: '', containerized: true, dockerAddress: 'unix:///var/run/docker.sock', 
+                                    twistlockPublish ca: '', cert: '', containerized: false, dockerAddress: 'unix:///var/run/docker.sock', 
                                         image: "${templateName}:latest", key: '', logLevel: 'true', timeout: 10
                                     echo "Completed Twistlock publish"
                                 } // script
