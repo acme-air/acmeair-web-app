@@ -132,7 +132,7 @@ spec:
                         } // script
                     } // steps
                 } // stage
-                stage('Promote') {
+                stage('promote') {
                     steps {
                         script {
                             openshift.withCluster() {
