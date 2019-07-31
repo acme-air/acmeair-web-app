@@ -80,7 +80,7 @@ spec:
                 } // stage                
                 stage('scan') {
                     parallel {
-                        stages('SonarQube') {
+                        stage('SonarQube') {
                             stage ('Analysis') {
                                 steps {
                                     script {
