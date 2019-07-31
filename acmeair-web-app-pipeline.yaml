@@ -54,18 +54,12 @@ spec:
                                 } // script
                             } // steps
                         } // stage
-                        stage('remote') {
+                        stage('remote-check') {
                             steps {
                                 script {
                                     openshift.withCluster() {
                                         openshift.withProject() {
-                                            // create a new application from the templatePath
-                                            openshift.newApp(templatePath)
-
-                                            def builds = openshift.selector("bc", templateName).related('builds')
-                                            builds.untilEach(1) {
-                                                return (it.object().status.phase == "Complete")
-                                            }
+                                            echo "Using project: ${openshift.project()}"
                                         }
                                     }
                                 } // script
@@ -123,6 +117,14 @@ spec:
                         script {
                             openshift.withCluster() {
                                 openshift.withProject() {
+                                    // create a new application from the templatePath
+                                    openshift.newApp(templatePath)
+
+                                    def builds = openshift.selector("bc", templateName).related('builds')
+                                    builds.untilEach(1) {
+                                        return (it.object().status.phase == "Complete")
+                                    }
+
                                     def rm = openshift.selector("dc", templateName).rollout()
                                     openshift.selector("dc", templateName).related('pods').untilEach(1) {
                                         return (it.object().status.phase == "Running")
