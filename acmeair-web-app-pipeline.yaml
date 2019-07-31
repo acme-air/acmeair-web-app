@@ -86,6 +86,7 @@ spec:
                                     withSonarQubeEnv('acme-sonarqube') {
                                         def scannerHome = tool 'acme-sonarqube';
                                         sh "${scannerHome}/bin/sonar-scanner"
+                                        sh "sleep 30"
                                     }
                                     def qg = waitForQualityGate()
                                     if (qg.status != 'OK') {
