@@ -105,7 +105,7 @@ spec:
                             steps {
                                 script {
                                     echo "Running Twistlock scan on image ${templateName}:latest"
-                                    twistlockScan ca: '', cert: '', compliancePolicy: 'high', containerized: false, dockerAddress: 'tcp://localhost:2375',
+                                    twistlockScan ca: '', cert: '', compliancePolicy: 'critical', containerized: false, dockerAddress: 'tcp://localhost:2375',
                                         gracePeriodDays: 0, ignoreImageBuildTime: true, image: "${templateName}:latest",
                                         key: '', logLevel: 'true', policy: 'critical', requirePackageUpdate: false, timeout: 10
                                     echo "Completed Twistlock scan. Publishing the report..."
