@@ -82,15 +82,14 @@ spec:
                     parallel {
                         stage('SonarQube') {
                             steps {
-                                script {
-                                    withSonarQubeEnv('acme-sonarqube') {
-                                        def scannerHome = tool 'acme-sonarqube';
-                                        sh "${scannerHome}/bin/sonar-scanner"
-                                        def qg = waitForQualityGate()
-                                        if (qg.status != 'OK') {
-                                            error "Pipeline aborted due to quality gate failure: ${qg.status}"
-                                        }
-                                    }
+                                withSonarQubeEnv('acme-sonarqube') {
+                                    def scannerHome = tool 'acme-sonarqube';
+                                    sh "${scannerHome}/bin/sonar-scanner"
+                                    sh "sleep 2"
+                                }
+                                def qg = waitForQualityGate()
+                                if (qg.status != 'OK') {
+                                    error "Pipeline aborted due to quality gate failure: ${qg.status}"
                                 }
                             }
                         } // stage
