@@ -263,6 +263,10 @@ pre {
 			<img src="images/acmeAirplane.png" alt="home" /><br/>
         <h1 style="margin: 15px 0 0 0;">Welcome to Acme Air - v1.0.245</h1>
         <p>Date/Time: <span id="datetime"></span></p>
+        <script>
+          var dt = new Date();
+          document.getElementById("datetime").innerHTML = dt.toLocaleString();
+          </script>
 			<p>This is a sample application for performance testing of light weight app servers, partionable data storage, Web 2.0 and mobile on the cloud.</p>
 		</div>
 	</div>
