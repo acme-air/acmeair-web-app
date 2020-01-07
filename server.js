@@ -2,8 +2,7 @@
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan');
-
-app.use(express.static("public"));
+    
 Object.assign=require('object-assign')
 
 app.engine('html', require('ejs').renderFile);
