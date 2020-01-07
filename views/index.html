@@ -1,9 +1,32 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <title>Welcome to OpenShift- IBM Acme Air Web App</title>
+  <title>Acme Air</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7.1/dijit/themes/claro/claro.css">
+  <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/dojo/1.7.1/dijit/themes/dijit.css">
+  
+  <script type="text/javascript" src="js/acmeair-common.js"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/dojo/1.7.1/dojo/dojo.js" djConfig="parseOnLoad: true"></script>
+
+  <script>
+    dojo.require("dojo.parser");
+    
+    dojo.require("dijit.form.Button");
+    dojo.require("dijit.Dialog");
+    dojo.require("dijit.form.TextBox");
+    dojo.require("dijit.Toolbar");
+    dojo.require("dijit.Declaration");
+    
+    dojo.require("dojo.cookie");
+    
+    dojo.addOnLoad(pageLoaded);
+    
+    function pageLoaded() {
+    	updateLoggedInUserWelcome();
+    }
+  </script>
 <style>
 
 /*!
@@ -213,91 +236,36 @@ pre {
 <body>
 
 <section class='container'>
-            <hgroup>
-              <h1>Acme Air Web App - Welcome to your Node.js application on OpenShift</h1>
-            </hgroup>
-
-
         <div class="row">
-          <section class='col-xs-12 col-sm-6 col-md-6'>
-            <section>
-              <h2>How to use this example application</h2>
-                <p>For instructions on how to use this application with OpenShift, start by reading the <a href="http://docs.okd.io/latest/dev_guide/templates.html#using-the-quickstart-templates">Developer Guide</a>.</p>
+          <br/>
+          <header> 
+            <img src="images/AcmeAir.png" alt="Acme Air"/><br/>
+            <div class="text-align: left">Flights, Baggage, and Loyalty all with a Smile</div><br/>
+          </header>
+          <div id="welcomeback"><div id="loggedinwelcome"></div>
+	</div>
+	<div id="main_content">
+		<!-- <span data-dojo-type="dijit.Declaration" data-dojo-props='widgetClass:"ToolbarSectionStart", defaults:{ label: "Label"}'>
+			<span data-dojo-type="dijit.ToolbarSeparator"></span>${label}:
+		</span> -->
 
-              <h2>Deploying code changes</h2>
-                <p>
-                  The source code for this application is available to be forked from the <a href="https://www.github.com/sclorg/nodejs-ex">OpenShift GitHub repository</a>.
-                  You can configure a webhook in your repository to make OpenShift automatically start a build whenever you push your code:
-                </p>
+		<!-- <div id="toolbar5" data-dojo-type="dijit.Toolbar">
+			<div data-dojo-type="ToolbarSectionStart" data-dojo-props='label:"Actions"'></div>
+			<div id="toolbar5.home" data-dojo-type="dijit.form.Button" data-dojo-props='showLabel:true' onClick="window.location='index.html'">Home</div>
+			<div id="toolbar5.flights" data-dojo-type="dijit.form.Button" data-dojo-props='showLabel:true' onClick="window.location='flights.html'">Flights</div>
+			<div id="toolbar5.checkin" data-dojo-type="dijit.form.Button" data-dojo-props='showLabel:true' onClick="window.location='checkin.html'">Checkin</div>
+			<div id="toolbar5.login" data-dojo-type="dijit.form.Button" data-dojo-props='showLabel:true' onClick="showLoginDialog()">Login</div>
+			<div id="toolbar5.logout" data-dojo-type="dijit.form.Button" data-dojo-props='showLabel:true' onClick="logout()">Logout</div>
+			<div id="toolbar5.account" data-dojo-type="dijit.form.Button" data-dojo-props='showLabel:true' onClick="window.location='customerprofile.html'">Account</div>
+		</div> -->
+		
+		<div class="content">
+			<img src="images/acmeAirplane.png" alt="home" /><br/>
+			  <h1 style="margin: 15px 0 0 0;">Welcome to Acme Air - v1.0.245</h1>
+			<p>This is a sample application for performance testing of light weight app servers, partionable data storage, Web 2.0 and mobile on the cloud.</p>
+		</div>
+	</div>
 
-<ol>
-  <li>From the Web Console homepage, navigate to your project</li>
-  <li>Click on Browse &gt; Builds</li>
-  <li>Click the link with your BuildConfig name</li>
-  <li>Click the Configuration tab</li>
-  <li>Click the "Copy to clipboard" icon to the right of the "GitHub webhook URL" field</li>
-  <li>Navigate to your repository on GitHub and click on repository settings &gt; webhooks &gt; Add webhook</li>
-  <li>Paste your webhook URL provided by OpenShift in the "Payload URL" field</li>
-  <li>Change the "Content type" to 'application/json'</li>
-  <li>Leave the defaults for the remaining fields &mdash; that's it!</li>
-</ol>
-<p>After you save your webhook, if you refresh your settings page you can see the status of the ping that Github sent to OpenShift to verify it can reach the server.</p>
-<p>Note: adding a webhook requires your OpenShift server to be reachable from GitHub.</p>
-
-                <h3>Working in your local Git repository</h3>
-                <p>If you forked the application from the OpenShift GitHub example, you'll need to manually clone the repository to your local system. Copy the application's source code Git URL and then run:</p>
-
-<pre>$ git clone &lt;git_url&gt; &lt;directory_to_create&gt;
-
-# Within your project directory
-# Commit your changes and push to OpenShift
-
-$ git commit -a -m 'Some commit message'
-$ git push</pre>
-
-<p>After pushing changes, you'll need to manually trigger a build if you did not setup a webhook as described above.</p>
-
-            </section>
-
-          </section>
-          <section class="col-xs-12 col-sm-6 col-md-6">
-
-                <h2>Managing your application</h2>
-
-                <p>Documentation on how to manage your application from the Web Console or Command Line is available at the <a href="http://docs.okd.io/latest/dev_guide/overview.html">Developer Guide</a>.</p>
-
-                <h3>Web Console</h3>
-                <p>You can use the Web Console to view the state of your application components and launch new builds.</p>
-
-                <h3>Command Line</h3>
-                <p>With the <a href="http://docs.okd.io/latest/cli_reference/overview.html">OpenShift command line interface</a> (CLI), you can create applications and manage projects from a terminal.</p>
-
-                <h2>Development Resources</h2>
-                  <ul>
-                    <li><a href="http://docs.okd.io/latest/welcome/index.html">OpenShift Documentation</a></li>
-                    <li><a href="https://github.com/openshift/origin">Openshift Origin GitHub</a></li>
-                    <li><a href="https://github.com/openshift/source-to-image">Source To Image GitHub</a></li>
-                    <li><a href="http://docs.okd.io/latest/using_images/s2i_images/nodejs.html">Getting Started with Node.js on OpenShift</a></li>
-                    <li><a href="http://stackoverflow.com/questions/tagged/openshift">Stack Overflow questions for OpenShift</a></li>
-                    <li><a href="http://git-scm.com/documentation">Git documentation</a></li>
-                  </ul>
-
-                <h2>Request information</h2>
-                <p>Page view count:
-                <% if (pageCountMessage) { %>
-                   <span class="code" id="count-value"><%=pageCountMessage%></span>
-                   </p>
-                    <div class="code"><h3>DB Connection Info:</h3>
-                      <table style='margin-left: 20px'>
-                          <tr><td>Type:</td><td><%= dbInfo.type %></td></tr>
-                          <tr><td>URL:</td><td><%= dbInfo.url %></td></tr>
-                      </table>
-                    </div>
-                <% } else { %>
-                   <span class="code" id="count-value">No database configured</span>
-                   </p>
-                <%} %>
-          </section>
         </div>
 
         <footer>
