@@ -1,13 +1,23 @@
+
 //  OpenShift sample Node application
+var bodyParser = require('body-parser')
+
 var express = require('express'),
     app     = express(),
     morgan  = require('morgan');
 
 app.use(express.static("public"));
 Object.assign=require('object-assign')
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json())
 
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
+
+const todos = ['new'];
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -73,6 +83,24 @@ var initDb = function(callback) {
     console.log('Connected to MongoDB at: %s', mongoURL);
   });
 };
+
+app.post('/todo', (req, res) => {
+  console.log(`new todo : ${req.body.todo}`);
+  todos.push(req.body.todo);
+  console.log(`todos: ${todos}`)
+  res.redirect('/');
+});
+
+app.get('/todos', (req, res) => {
+  let html = '';
+  for (let i = 0; i < todos.length; i++) {
+    html += `<div>${todos[i]}</div>`;
+  }
+  // html = html.replace(/</gi, '&#60;');
+  html += "<a href='/'>home</a>";
+  console.log(html);
+  res.send(html);
+});
 
 app.get('/', function (req, res) {
   // try to initialize the db on every request if it's not already
