@@ -6,6 +6,8 @@ var express = require('express'),
     app     = express(),
     morgan  = require('morgan');
 
+var request = require('request');
+
 app.use(express.static("public"));
 Object.assign=require('object-assign')
 // parse application/x-www-form-urlencoded
@@ -109,6 +111,21 @@ app.get('/check_feedbacks', (req, res) => {
 app.get('/clear_feedbacks', (req, res) => {
   todos = [];
   console.log("Cleared the feedback array");
+
+  console.log("in Initialize FW Rule");
+  var alertdata = {
+    name: "Initialize CNAF Rule in Twistlock",
+    text: "Dummy",
+    scan_results: ""
+  };
+  this.invokeTwistlock(alertdata, function(err, data) {
+    if (err) {
+      console.log("Failed to initialize CNAF Rule in Twistlock: " + err);
+    }
+    else {
+      console.log("Sucessfully initiaized CNAF rule in Twistlock");
+   }
+  });
   res.redirect('/');
 });
 
@@ -147,6 +164,44 @@ app.get('/pagecount', function (req, res) {
     res.send('{ pageCount: -1 }');
   }
 });
+
+exports.invokeTwistlock = function(alertdata, cb) {
+  var options = {
+    'method': 'GET',
+    'url': 'https://twistlock-console.eu.ngrok.io/api/v1/current/token',
+    'headers': {
+      'Authorization': 'Basic YWRtaW46b2NhZG1pbg=='
+    }
+  };
+  request(options, function (error, response) { 
+    if (error) {
+      console.log("Error in authentication to Twistlock", error);
+      cb(error);
+    } 
+    console.log("Sucessfully authenticated to Twistlock");
+    var TwistlockAuthToken = JSON.parse(response.body);
+    // console.log("Twistlock Token " + TwistlockAuthToken.token);
+
+    var options = {
+      'method': 'PUT',
+      'url': 'https://twistlock-console.eu.ngrok.io/api/v1/policies/firewall/app/container',
+      'headers': {
+        'Authorization': 'Bearer ' + TwistlockAuthToken.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({"_id":"containerAppFirewall","rules":[{"modified":"2020-01-13T08:04:10.776Z","owner":"admin","name":"cnaf_rule_0600","previousName":"","effect":"alert","blacklist":{"advancedProtection":true,"subnets":[]},"whitelistSubnets":[],"libinject":{"sqliEnabled":true,"xssEnabled":true},"headers":{"specs":[]},"resources":{"hosts":["*"],"images":["*"],"labels":["name:acmeair-web-app"],"containers":["*"]},"certificate":{"encrypted":""},"csrfEnabled":true,"clickjackingEnabled":true,"attackToolsEnabled":true,"intelGathering":{"bruteforceEnabled":false,"dirTraversalEnabled":true,"trackErrorsEnabled":false,"infoLeakageEnabled":false,"removeFingerprintsEnabled":true},"shellshockEnabled":true,"malformedReqEnabled":true,"maliciousUpload":{"enabled":false,"allowedFileTypes":[],"allowedExtensions":[]},"portMaps":[{"exposed":0,"internal":8080,"tls":false}]},{"modified":"2020-01-13T08:05:54.989Z","owner":"admin","name":"cnaf_rule_0102","previousName":"","effect":"alert","blacklist":{"advancedProtection":false,"subnets":[]},"whitelistSubnets":[],"libinject":{"sqliEnabled":false,"xssEnabled":false},"headers":{"specs":[]},"resources":{"hosts":["*"],"images":["docker.io/docker:18.05-dind"],"labels":["*"],"containers":["*"]},"certificate":{"encrypted":""},"csrfEnabled":true,"clickjackingEnabled":false,"attackToolsEnabled":false,"intelGathering":{"bruteforceEnabled":false,"dirTraversalEnabled":true,"trackErrorsEnabled":false,"infoLeakageEnabled":false,"removeFingerprintsEnabled":true},"shellshockEnabled":false,"malformedReqEnabled":false,"maliciousUpload":{"enabled":false,"allowedFileTypes":[],"allowedExtensions":[]},"portMaps":[{"exposed":0,"internal":8080,"tls":false}]},{"modified":"2020-01-13T08:05:23.757Z","owner":"admin","name":"cnaf_rule_0782","previousName":"","effect":"alert","blacklist":{"advancedProtection":false,"subnets":[]},"whitelistSubnets":[],"libinject":{"sqliEnabled":false,"xssEnabled":true},"headers":{"specs":[]},"resources":{"hosts":["*"],"images":["docker.io/docker:18.05-dind"],"labels":["*"],"containers":["*"]},"certificate":{"encrypted":""},"csrfEnabled":false,"clickjackingEnabled":false,"attackToolsEnabled":false,"intelGathering":{"bruteforceEnabled":false,"dirTraversalEnabled":true,"trackErrorsEnabled":false,"infoLeakageEnabled":false,"removeFingerprintsEnabled":true},"shellshockEnabled":false,"malformedReqEnabled":false,"maliciousUpload":{"enabled":false,"allowedFileTypes":[],"allowedExtensions":[]},"portMaps":[{"exposed":0,"internal":80,"tls":false}]},{"modified":"2020-01-13T08:04:50.153Z","owner":"admin","name":"cnaf_rule_5809","previousName":"","effect":"alert","blacklist":{"advancedProtection":true,"subnets":[]},"whitelistSubnets":[],"libinject":{"sqliEnabled":false,"xssEnabled":true},"headers":{"specs":[]},"resources":{"hosts":["*"],"images":["docker.io/docker:18.05-dind"],"labels":["*"],"containers":["*"]},"certificate":{"encrypted":""},"csrfEnabled":false,"clickjackingEnabled":false,"attackToolsEnabled":false,"intelGathering":{"bruteforceEnabled":false,"dirTraversalEnabled":true,"trackErrorsEnabled":false,"infoLeakageEnabled":false,"removeFingerprintsEnabled":true},"shellshockEnabled":false,"malformedReqEnabled":false,"maliciousUpload":{"enabled":false,"allowedFileTypes":[],"allowedExtensions":[]},"portMaps":[{"exposed":0,"internal":80,"tls":false}]},{"modified":"2020-01-13T08:03:18.176Z","owner":"admin","name":"cnaf_rule_0493","previousName":"","effect":"alert","blacklist":{"advancedProtection":true,"subnets":[]},"whitelistSubnets":[],"libinject":{"sqliEnabled":false,"xssEnabled":true},"headers":{"specs":[]},"resources":{"hosts":["*"],"images":["docker.io/docker:18.05-dind"],"labels":["*"],"containers":["*"]},"certificate":{"encrypted":""},"csrfEnabled":false,"clickjackingEnabled":false,"attackToolsEnabled":false,"intelGathering":{"bruteforceEnabled":false,"dirTraversalEnabled":true,"trackErrorsEnabled":false,"infoLeakageEnabled":false,"removeFingerprintsEnabled":true},"shellshockEnabled":false,"malformedReqEnabled":false,"maliciousUpload":{"enabled":false,"allowedFileTypes":[],"allowedExtensions":[]},"portMaps":[{"exposed":0,"internal":80,"tls":false}]}],"minPort":30000,"maxPort":31000})
+      // {"_id":"containerAppFirewall","rules":[],"minPort":30000,"maxPort":31000}
+    };
+    request(options, function (error, response) { 
+      if (error) {
+        console.log("Error connecting to Twistlock..." + error);
+        cb(error);
+      } 
+      console.log(response.body);
+      cb(null, "success");
+    });
+  });
+}
 
 // error handling
 app.use(function(err, req, res, next){
