@@ -17,7 +17,7 @@ app.use(bodyParser.json())
 app.engine('html', require('ejs').renderFile);
 app.use(morgan('combined'))
 
-const todos = ['new'];
+var todos = ['new'];
 
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
@@ -91,15 +91,25 @@ app.post('/todo', (req, res) => {
   res.redirect('/');
 });
 
-app.get('/todos', (req, res) => {
+app.get('/check_feedbacks', (req, res) => {
   let html = '';
+  if (todos.length <= 0) {
+    html += `<div>No feedbacks yet! </div>`
+  }
   for (let i = 0; i < todos.length; i++) {
     html += `<div>${todos[i]}</div>`;
   }
   // html = html.replace(/</gi, '&#60;');
+  html += "<br><br>"
   html += "<a href='/'>home</a>";
   console.log(html);
   res.send(html);
+});
+
+app.get('/clear_feedbacks', (req, res) => {
+  todos = [];
+  console.log("Cleared the feedback array");
+  res.redirect('/');
 });
 
 app.get('/', function (req, res) {
