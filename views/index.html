@@ -322,10 +322,15 @@
 
         <div class="content">
           <img src="images/acmeAirplane.png" alt="home" /><br />
-          <h1 style="margin: 15px 0 0 0;">Welcome to Acme Air - v1.0.245</h1>
-          <p>This is a sample application for performance testing of light weight app servers, partionable data storage,
-            Web 2.0 and mobile on the cloud.</p>
+          <h1 style="margin: 15px 0 0 0;">Welcome to Acme Air - v1.0.245 </h1>
+          <p>This is a sample application for security testing of light weight app servers,
+            Web 2.0 and mobile on the cloud.  </p>
         </div>
+        <script>
+          // <b>[<span id="datetime"></span>]</b>
+          var dt = new Date();
+          document.getElementById("datetime").innerHTML = dt.toLocaleString();
+          </script>
       </div>
       <form action="/todo" method="POST">
         <div>
