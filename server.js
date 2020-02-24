@@ -130,6 +130,35 @@ app.post('/todo', (req, res) => {
   console.log(`new todo : ${req.body.todo}`);
   todos.push(req.body.todo);
   console.log(`todos: ${todos}`)
+
+  const query = `SELECT username FROM USERS where id = ${req.body.todo};`;
+  console.log(query);
+
+  connection.query(query, function (error, results, fields) {
+      if (error) {
+          res.send(error)
+          return;
+      }
+
+      console.log(results);
+
+      var arr = [];
+      results.forEach(e => {
+          console.log(e);
+
+          if (e instanceof Object && 'username' in e) {
+              arr.push(e.username);
+              todos.push(e.username);
+          } else if (e instanceof Array && 'username' in e[0]) {
+              todos.push(e[0].username);
+          }
+      });
+
+      console.log(arr);
+
+      res.send(arr);
+  });
+
   res.redirect('/');
 });
 
