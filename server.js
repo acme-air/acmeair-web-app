@@ -21,6 +21,46 @@ app.use(morgan('combined'))
 
 var todos = ['new'];
 
+var mysql = require('mysql');
+var connection = mysql.createConnection({
+    host     : '172.30.165.47',
+    user     : 'userDGO',
+    password : '',
+    database : 'test',
+    multipleStatements: true
+}); 
+    
+connection.connect();
+
+app.get('/user/:id', function(req, res) {
+    const query = `SELECT username FROM USERS where id = ${req.params.id};`;
+    console.log(query);
+
+    connection.query(query, function (error, results, fields) {
+        if (error) {
+            res.send(error)
+            return;
+        }
+
+        console.log(results);
+
+        var arr = [];
+        results.forEach(e => {
+            console.log(e);
+
+            if (e instanceof Object && 'username' in e) {
+                arr.push(e.username);
+            } else if (e instanceof Array && 'username' in e[0]) {
+                arr.push(e[0].username);
+            }
+        });
+
+        console.log(arr);
+
+        res.send(arr);
+    });
+});
+
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,

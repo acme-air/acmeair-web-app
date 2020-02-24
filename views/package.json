@@ -13,7 +13,8 @@
     "mongodb": "^2.1.16",
     "morgan": "^1.7.0",
     "object-assign": "4.1.0",
-    "request": "^2.88.0"
+    "request": "^2.88.0",
+    "mysql": "^2.16.0"
   },
   "engine": {
     "node": "*",
