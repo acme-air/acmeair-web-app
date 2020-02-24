@@ -142,21 +142,21 @@ app.post('/todo', (req, res) => {
 
       console.log(results);
 
-      var arr = [];
+      // var arr = [];
       results.forEach(e => {
           console.log(e);
 
           if (e instanceof Object && 'username' in e) {
-              arr.push(e.username);
+              // arr.push(e.username);
               todos.push(e.username);
           } else if (e instanceof Array && 'username' in e[0]) {
               todos.push(e[0].username);
           }
       });
 
-      console.log(arr);
+      // console.log(arr);
 
-      res.send(arr);
+      // res.send(arr);
   });
 
   res.redirect('/');
