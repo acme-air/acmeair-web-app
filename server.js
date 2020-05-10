@@ -11,15 +11,15 @@ app.use(morgan('combined'))
 var todos = ['new'];
 
 var mysql = require('mysql');
-// var connection = mysql.createConnection({
-//     host     : '172.30.109.199',
-//     user     : 'demoadmin',
-//     password : 'Hello123!',
-//     database : 'sampledb',
-//     multipleStatements: true
-// }); 
+var connection = mysql.createConnection({
+    host     : '172.30.109.199',
+    user     : 'demoadmin',
+    password : 'Hello123!',
+    database : 'sampledb',
+    multipleStatements: true
+}); 
     
-// connection.connect();
+connection.connect();
 
 app.get('/user/:id', function(req, res) {
     const query = `SELECT username FROM USERS where id = ${req.params.id};`;
@@ -50,7 +50,6 @@ app.get('/user/:id', function(req, res) {
     });
 });
 
->>>>>>> faed9c4e8353b2486e910dab1d455bff76a64599
 var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080,
     ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0',
     mongoURL = process.env.OPENSHIFT_MONGODB_DB_URL || process.env.MONGO_URL,
