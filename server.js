@@ -11,15 +11,15 @@ app.use(morgan('combined'))
 var todos = ['new'];
 
 var mysql = require('mysql');
-var connection = mysql.createConnection({
-    host     : '172.30.109.199',
-    user     : 'demoadmin',
-    password : 'Hello123!',
-    database : 'sampledb',
-    multipleStatements: true
-}); 
+// var connection = mysql.createConnection({
+//     host     : '172.30.109.199',
+//     user     : 'demoadmin',
+//     password : 'Hello123!',
+//     database : 'sampledb',
+//     multipleStatements: true
+// }); 
     
-connection.connect();
+// connection.connect();
 
 app.get('/user/:id', function(req, res) {
     const query = `SELECT username FROM USERS where id = ${req.params.id};`;
