@@ -175,6 +175,7 @@ app.get('/check_feedbacks', (req, res) => {
 app.get('/clear_feedbacks', (req, res) => {
   todos = [];
   console.log("Cleared the feedback array");
+  process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 
   console.log("in Initialize FW Rule");
   var alertdata = {
