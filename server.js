@@ -233,9 +233,9 @@ app.get('/pagecount', function (req, res) {
 exports.invokeTwistlock = function(alertdata, cb) {
   var options = {
     'method': 'GET',
-    'url': 'https://twistlock-ocp41-console.ngrok.io/api/v1/current/token',
+    'url': 'https://twistlock-console.ngrok.io/api/v1/current/token',
     'headers': {
-      'Authorization': 'Basic YWRtaW46YWRtaW4='
+      'Authorization': 'Basic YWRtaW46b2NhZG1pbg=='
     }
   };
   request(options, function (error, response) { 
@@ -249,7 +249,7 @@ exports.invokeTwistlock = function(alertdata, cb) {
 
     var options = {
       'method': 'PUT',
-      'url': 'https://twistlock-ocp41-console.ngrok.io/api/v1/policies/firewall/app/container',
+      'url': 'https://twistlock-console.ngrok.io/api/v1/policies/firewall/app/container',
       'headers': {
         'Authorization': 'Bearer ' + TwistlockAuthToken.token,
         'Content-Type': 'application/json'
